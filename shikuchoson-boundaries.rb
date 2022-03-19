@@ -30,9 +30,9 @@ end
 
 puts 'Parsing GeoJSON ...'
 geojson = JSON.parse(geojson_str)
-abort "Unexpected GeoJSON type: #{geojson['type']}" if geojson['type'] != 'FeatureCollection'
 
 puts 'Outputing GeoJSON files ...'
+properties = []
 geojson['features']
   .reject { |f| f['properties']['N03_007'].nil? } # 所属未定地を除く
   .group_by { |f| f['properties']['N03_007'] }
@@ -48,6 +48,7 @@ geojson['features']
       'N03_004' => '市区町村名',
       'N03_007' => '行政区域コード'
     )
+    properties << feature['properties']
 
     if features.size > 1
       abort 'Unexpected geometry type' if features.any? { |f| f['geometry']['type'] != 'Polygon' }
@@ -61,3 +62,8 @@ geojson['features']
       feature.slice('type', 'crs', 'properties', 'geometry').to_json
     )
   end
+
+File.write(
+  File.join(OUTPUT_DIR, 'index.json'),
+  properties.sort_by { |p| p['行政区域コード'].to_i }.to_json
+)
