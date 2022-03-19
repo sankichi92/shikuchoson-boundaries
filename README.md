@@ -15,14 +15,23 @@ https://sankichi.net/shikuchoson-boundaries/
 全市区町村を JSON で返します。
 
 ```console
-$ curl -s https://sankichi.net/shikuchoson-boundaries/ | jq '.[0]'
-{
-  "都道府県": "北海道",
-  "支庁・振興局": "石狩振興局",
-  "郡・政令都市": "札幌市",
-  "市区町村": "中央区",
-  "行政区域コード": "01101"
-}
+$ curl -s https://sankichi.net/shikuchoson-boundaries/ | jq '.[0:2]'
+[
+  {
+    "都道府県": "北海道",
+    "支庁・振興局": "石狩振興局",
+    "郡・政令都市": "札幌市",
+    "市区町村": "中央区",
+    "行政区域コード": "01101"
+  },
+  {
+    "都道府県": "北海道",
+    "支庁・振興局": "石狩振興局",
+    "郡・政令都市": "札幌市",
+    "市区町村": "北区",
+    "行政区域コード": "01102"
+  }
+]
 $ curl -s https://sankichi.net/shikuchoson-boundaries/ | jq '.[] | select(.["市区町村"] == "つくば市") | .["行政区域コード"]'
 "08220"
 ```
@@ -32,7 +41,31 @@ $ curl -s https://sankichi.net/shikuchoson-boundaries/ | jq '.[] | select(.["市
 行政区域コード `:code` に対応する市区町村の行政区域を GeoJSON で返します。
 
 ```console
-$ curl https://sankichi.net/shikuchoson-boundaries/08220.geojson
+$ curl -s https://sankichi.net/shikuchoson-boundaries/08220.geojson | jq
+{
+  "type": "Feature",
+  "properties": {
+    "都道府県": "茨城県",
+    "市区町村": "つくば市",
+    "行政区域コード": "08220"
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          140.05993105137702,
+          36.23617286468601
+        ],
+        [
+          140.05996105096176,
+          36.23596341348082
+        ],
+        // ...
+      ]
+    ]
+  }
+}
 ```
 
 ## License
