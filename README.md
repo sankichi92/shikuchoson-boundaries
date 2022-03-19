@@ -1,6 +1,6 @@
 # shikuchoson-boundaries
 
-行政区域コードから市区町村の境界を GeoJSON で取得するための簡易 Web API。
+市区町村の行政区域界を GeoJSON で返す簡易 Web API。
 
 [「国土数値情報（行政区域データ）」（国土交通省）](https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N03-v3_0.html)を加工して作成。
 
@@ -12,7 +12,9 @@ https://sankichi.net/shikuchoson-boundaries/
 
 ### `GET /`
 
-全市区町村を JSON で返します。
+全市区町村の属性の一覧を JSON で返します。
+
+#### 使用例
 
 ```console
 $ curl -s https://sankichi.net/shikuchoson-boundaries/ | jq '.[0:2]'
@@ -38,7 +40,9 @@ $ curl -s https://sankichi.net/shikuchoson-boundaries/ | jq '.[] | select(.["市
 
 ### `GET /:code.geojson`
 
-行政区域コード `:code` に対応する市区町村の行政区域を GeoJSON で返します。
+行政区域コード `:code` に対応する市区町村の行政区域界を GeoJSON で返します。
+
+#### 使用例
 
 ```console
 $ curl -s https://sankichi.net/shikuchoson-boundaries/08220.geojson | jq
@@ -67,6 +71,9 @@ $ curl -s https://sankichi.net/shikuchoson-boundaries/08220.geojson | jq
   }
 }
 ```
+
+[`gh-pages`](https://github.com/sankichi92/shikuchoson-boundaries/tree/gh-pages) ブランチでは、
+https://github.com/sankichi92/shikuchoson-boundaries/blob/gh-pages/08220.geojson のように GitHub のプレビュー機能を使って視覚的に確認することもできます。
 
 ## License
 
