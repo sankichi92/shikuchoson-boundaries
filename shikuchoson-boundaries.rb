@@ -46,7 +46,7 @@ geojson['features']
       'N03_003' => '郡・政令都市',
       'N03_004' => '市区町村',
       'N03_007' => '行政区域コード'
-    )
+    ).compact!
     properties << feature['properties']
 
     if features.size > 1
