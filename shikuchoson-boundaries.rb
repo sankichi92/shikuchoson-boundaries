@@ -40,7 +40,6 @@ geojson['features']
     abort 'Unexpected properties' if features.map { |f| f['properties'] }.uniq.size > 1
 
     feature = features.first.dup
-    feature['crs'] = geojson['crs']
     feature['properties'].transform_keys!(
       'N03_001' => '都道府県',
       'N03_002' => '支庁・振興局',
