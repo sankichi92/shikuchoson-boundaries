@@ -2,7 +2,7 @@
 
 市区町村の行政区域界を GeoJSON で返す簡易 Web API。
 
-[「国土数値情報（行政区域データ）」（国土交通省）](https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N03-v3_0.html)を加工して作成。
+[「国土数値情報（行政区域データ）」（国土交通省）](https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N03-v3_0.html)から令和3年全国のデータ（N03-20210101_GML.zip）を加工して作成。
 
 ## API
 
@@ -15,6 +15,8 @@ https://shikuchoson-boundaries.sankichi.app/
 全市区町村の属性の一覧を JSON で返します。
 
 #### 使用例
+
+[jq](https://stedolan.github.io/jq/) を使用して市区町村名から行政区域コードを取得します。
 
 ```console
 $ curl -s https://shikuchoson-boundaries.sankichi.app/ | jq '.[0:2]'

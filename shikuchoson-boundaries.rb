@@ -49,7 +49,7 @@ geojson['features']
     ).compact!
     properties << feature['properties']
 
-    if features.size > 1
+    if features.size > 1 # 1つの行政区域コードに複数の feature がある場合は、Polygon をマージして MultiPolygon にする
       abort 'Unexpected geometry type' if features.any? { |f| f['geometry']['type'] != 'Polygon' }
 
       feature['geometry']['type'] = 'MultiPolygon'
