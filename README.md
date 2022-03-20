@@ -8,7 +8,7 @@
 
 ### Base URL
 
-https://sankichi.net/shikuchoson-boundaries/
+https://shikuchoson-boundaries.sankichi.app/
 
 ### `GET /`
 
@@ -17,7 +17,7 @@ https://sankichi.net/shikuchoson-boundaries/
 #### 使用例
 
 ```console
-$ curl -s https://sankichi.net/shikuchoson-boundaries/ | jq '.[0:2]'
+$ curl -s https://shikuchoson-boundaries.sankichi.app/ | jq '.[0:2]'
 [
   {
     "都道府県": "北海道",
@@ -34,7 +34,7 @@ $ curl -s https://sankichi.net/shikuchoson-boundaries/ | jq '.[0:2]'
     "行政区域コード": "01102"
   }
 ]
-$ curl -s https://sankichi.net/shikuchoson-boundaries/ | jq '.[] | select(.["市区町村"] == "つくば市") | .["行政区域コード"]'
+$ curl -s https://shikuchoson-boundaries.sankichi.app/ | jq '.[] | select(.["市区町村"] == "つくば市") | .["行政区域コード"]'
 "08220"
 ```
 
@@ -45,7 +45,7 @@ $ curl -s https://sankichi.net/shikuchoson-boundaries/ | jq '.[] | select(.["市
 #### 使用例
 
 ```console
-$ curl -s https://sankichi.net/shikuchoson-boundaries/08220.geojson | jq
+$ curl -s https://shikuchoson-boundaries.sankichi.app/08220.geojson | jq
 {
   "type": "Feature",
   "properties": {
