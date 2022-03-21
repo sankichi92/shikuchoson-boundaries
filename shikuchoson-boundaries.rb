@@ -4,6 +4,7 @@ require 'json'
 require 'net/http'
 require 'uri'
 
+require 'active_support/core_ext/object/deep_dup'
 require 'zip'
 
 DATA_URL = 'https://nlftp.mlit.go.jp/ksj/gml/data/N03/N03-2021/N03-20210101_GML.zip'
@@ -39,7 +40,7 @@ geojson['features']
   .each do |code, features|
     abort 'Unexpected properties' if features.map { |f| f['properties'] }.uniq.size > 1
 
-    feature = features.first.dup
+    feature = features.first.deep_dup
     feature['properties'].transform_keys!(
       'N03_001' => '都道府県',
       'N03_002' => '支庁・振興局',
@@ -56,9 +57,15 @@ geojson['features']
       feature['geometry']['coordinates'] = features.map { |f| f['geometry']['coordinates'] }
     end
 
+    feature['bbox'] = features.inject([180, 90, -180, -90]) do |result, f|
+      f['geometry']['coordinates'].first.inject(result) do |r, point|
+        [[r[0], point[0]].min, [r[1], point[1]].min, [r[2], point[0]].max, [r[3], point[1]].max]
+      end
+    end
+
     File.write(
       File.join(OUTPUT_DIR, "#{code}.geojson"),
-      feature.slice('type', 'crs', 'properties', 'geometry').to_json
+      feature.slice('type', 'bbox', 'properties', 'geometry').to_json
     )
   end
 
