@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
-require 'json'
 require 'net/http'
 require 'uri'
 
+require 'active_support/core_ext/big_decimal/conversions'
 require 'active_support/core_ext/object/deep_dup'
+require 'oj'
 require 'zip'
 
 DATA_URL = 'https://nlftp.mlit.go.jp/ksj/gml/data/N03/N03-2021/N03-20210101_GML.zip'
@@ -30,7 +31,7 @@ geojson_str = Zip::File.open(data_path) do |zip_file|
 end
 
 puts 'Parsing GeoJSON ...'
-geojson = JSON.parse(geojson_str)
+geojson = Oj.load(geojson_str, bigdecimal_load: :bigdecimal)
 
 puts 'Outputing GeoJSON files ...'
 properties = []
@@ -65,11 +66,11 @@ geojson['features']
 
     File.write(
       File.join(OUTPUT_DIR, "#{code}.geojson"),
-      feature.slice('type', 'bbox', 'properties', 'geometry').to_json
+      Oj.dump(feature.slice('type', 'bbox', 'properties', 'geometry'), bigdecimal_as_decimal: true)
     )
   end
 
 File.write(
   File.join(OUTPUT_DIR, 'index.json'),
-  properties.sort_by { |p| p['行政区域コード'].to_i }.to_json
+  Oj.dump(properties.sort_by { |p| p['行政区域コード'].to_i })
 )
