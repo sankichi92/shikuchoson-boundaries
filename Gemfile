@@ -5,3 +5,7 @@ source 'https://rubygems.org'
 gem 'activesupport'
 gem 'oj'
 gem 'rubyzip'
+
+group :development do
+  gem 'ruby-lsp'
+end
