@@ -1,44 +1,35 @@
 # frozen_string_literal: true
 
-require 'net/http'
-require 'uri'
-
+require 'fileutils'
+require 'open-uri'
 require 'active_support/core_ext/big_decimal/conversions'
 require 'active_support/core_ext/object/deep_dup'
 require 'oj'
 require 'zip'
 
-DATA_URL = 'https://nlftp.mlit.go.jp/ksj/gml/data/N03/N03-2022/N03-20220101_GML.zip'
-
-TMP_DIR = File.expand_path('tmp', __dir__)
 OUTPUT_DIR = File.expand_path('output', __dir__)
+FileUtils.mkdir_p(OUTPUT_DIR)
 
-Dir.mkdir(TMP_DIR) unless File.exist?(TMP_DIR)
-Dir.mkdir(OUTPUT_DIR) unless File.exist?(OUTPUT_DIR)
-
-data_path = File.join(TMP_DIR, File.basename(DATA_URL))
-
-unless File.exist?(data_path)
-  puts "Downloading #{DATA_URL} ..."
-  response = Net::HTTP.get_response(URI(DATA_URL))
-  File.write(data_path, response.body)
-end
-
-puts 'Extracting a GeoJSON file from the donloaded zip file ...'
-geojson_str = Zip::File.open(data_path) do |zip_file|
-  geojson_entry = zip_file.glob('*.geojson').first
-  geojson_entry.get_input_stream.read
-end
-
-puts 'Parsing GeoJSON ...'
-geojson = Oj.load(geojson_str, bigdecimal_load: :bigdecimal)
-
-puts 'Outputing GeoJSON files ...'
 properties = []
-geojson['features']
-  .reject { |f| f['properties']['N03_007'].nil? } # 所属未定地を除く
-  .group_by { |f| f['properties']['N03_007'] }
-  .each do |code, features|
+
+(1..47).map { |i| i.to_s.rjust(2, '0') }.each do |prefecture_code|
+  print "Processing prefecture_code=#{prefecture_code} ..."
+
+  data_url = "https://nlftp.mlit.go.jp/ksj/gml/data/N03/N03-2022/N03-20220101_#{prefecture_code}_GML.zip"
+  geojson_str = URI(data_url).open do |io|
+    Zip::File.open(io) do |zip_file|
+      geojson_entry = zip_file.glob('*.geojson').first
+      geojson_entry.get_input_stream.read
+    end
+  end
+
+  geojson = Oj.load(geojson_str, bigdecimal_load: :bigdecimal)
+
+  code_to_features = geojson['features']
+                     .reject { |f| f['properties']['N03_007'].nil? } # 所属未定地を除く
+                     .group_by { |f| f['properties']['N03_007'] }
+
+  code_to_features.each do |code, features|
     abort 'Unexpected properties' if features.map { |f| f['properties'] }.uniq.size > 1
 
     feature = features.first.deep_dup
@@ -69,6 +60,9 @@ geojson['features']
       Oj.dump(feature.slice('type', 'bbox', 'properties', 'geometry'), bigdecimal_as_decimal: true)
     )
   end
+
+  puts ' done'
+end
 
 File.write(
   File.join(OUTPUT_DIR, 'index.json'),
