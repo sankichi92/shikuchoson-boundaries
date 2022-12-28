@@ -7,5 +7,6 @@ gem 'oj'
 gem 'rubyzip'
 
 group :development do
+  gem 'rubocop'
   gem 'ruby-lsp'
 end
