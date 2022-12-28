@@ -8,7 +8,7 @@ require 'active_support/core_ext/object/deep_dup'
 require 'oj'
 require 'zip'
 
-DATA_URL = 'https://nlftp.mlit.go.jp/ksj/gml/data/N03/N03-2021/N03-20210101_GML.zip'
+DATA_URL = 'https://nlftp.mlit.go.jp/ksj/gml/data/N03/N03-2022/N03-20220101_GML.zip'
 
 TMP_DIR = File.expand_path('tmp', __dir__)
 OUTPUT_DIR = File.expand_path('output', __dir__)
